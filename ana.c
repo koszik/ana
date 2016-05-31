@@ -1,8 +1,9 @@
 /*
- * ana (C) Matyas Koszik <koszik@atw.hu>, 2001-2006.
+ * ana (C) Matyas Koszik <koszik@atw.hu>, 2001-2006, 2016.
  *
  */
 #include <sys/types.h>
+#include <strings.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
