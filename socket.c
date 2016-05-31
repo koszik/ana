@@ -1,5 +1,5 @@
 /*
- * ana (C) Matyas Koszik <koszik@atw.hu>, 2001-2002, 2005.
+ * ana (C) Matyas Koszik <koszik@atw.hu>, 2001-2002, 2005, 2016.
  *
  */
 #include <stdio.h>
@@ -25,15 +25,23 @@ sockprintf(int sd, char *fmt, ...)
 	int len, ret;
 
 	va_start(lst, fmt);
-	buf = malloc(2048);
+	if(!(buf = malloc(2048)))
+	{
+		exc_raise(E_P, "can't malloc 2048 bytes");
+		return -1;
+	}
 	len = vsnprintf(buf, 2048, fmt, lst);
 	if(len > 2048)
 	{
-		buf = realloc(buf, len + 1);
+		if(!(buf = realloc(buf, len + 1)))
+		{
+		    exc_raise(E_P, "can't realloc %i bytes", len + 1);
+		    return -1;
+		}
 		vsnprintf(buf, len, fmt, lst);
 	}
 	else if(len == -1)
-		logprintf(LOG_CRIT, "sockprintf: len = -1!\n");
+		exc_raise(E_P, "len = -1!\n");
 	ret = write(sd, buf, len);
 	free(buf);
 	va_end(lst);
@@ -41,27 +49,26 @@ sockprintf(int sd, char *fmt, ...)
 }
 
 int
-listen_on(int port)
+listen_on_af(int port, int af)
 {
 	int sd;
 	int one;
 	struct sockaddr_in host_addr;
 
 
-	sd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+	sd = socket(af, SOCK_STREAM, IPPROTO_IP);
 	one = 1;
 	setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
 
-	host_addr.sin_family = AF_INET;
+	host_addr.sin_family = af;
 	host_addr.sin_addr.s_addr = 0;
 	host_addr.sin_port = htons(port); 
 
 	if((bind(sd, (struct sockaddr *)&host_addr, sizeof(struct sockaddr_in))) == -1)
 	{
-		logprintf(LOG_ERR,
-		"listen_on: bind(%i, %s:%i) = -1 (%s)\n",
-		sd, inet_ntoa(*(struct in_addr*)&host_addr.sin_addr.s_addr),
-		port, strerror(errno));
+		exc_raise(E_P, "bind(%i, %s:%i) = -1 (%s)\n",
+		    sd, inet_ntoa(*(struct in_addr*)&host_addr.sin_addr.s_addr),
+		    port, strerror(errno));
 		return -1;
 	}
 
