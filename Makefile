@@ -1,5 +1,5 @@
 #
-#  ana (C) Matyas Koszik <koszik@atw.hu>, 2001-2004.
+#  ana (C) Matyas Koszik <koszik@atw.hu>, 2001-2004, 2016.
 #
 
 DEFS = 
@@ -17,42 +17,32 @@ LIBS = -ldl
 
 #LDFLAGS = -pg
 LDFLAGS = -rdynamic -Wl,-export-dynamic
-LDFLAGS_SOL = -lsocket -lnsl -L/export/home/koszik/SUNWspro/prod/lib
+LDFLAGS_SOLARIS = -lsocket -lnsl -L/export/home/koszik/SUNWspro/prod/lib
 # -no_cpprt
 
 
-CFLAGS_OPT = -O3 -funroll-loops -fno-strength-reduce -Wstrict-prototypes -Wall \
-         -fomit-frame-pointer -fexpensive-optimizations -Wmissing-prototypes \
-         -Wmissing-declarations -ansi -DHAVE_DLOPEN
+CFLAGS_GCC = -Wstrict-prototypes -Wall -Wmissing-prototypes \
+            -Wmissing-declarations -ansi -DHAVE_DLOPEN -std=c99
 #	  -Wshadow -Wpointer-arith \
 #         -Wwrite-strings \
 #         -Wmissing-noreturn -Wmissing-format-attribute  \
 #         -Wdisabled-optimization
 # -Wcast-qual -Wunreachable-code -Wconversion -Wbad-function-cast
+# -Wredundant-decls
+
+CFLAGS_OPT = $(CFLAGS_GCC) -O3 -funroll-loops -fno-strength-reduce \
+         -fomit-frame-pointer -fexpensive-optimizations
 # -march=i686 -mcpu=i686
 
 CFLAGS_ICC = -Wall -O3 -ansi -wd1418,1419,279,310,981,193,810,869,171
 
-#CFLAGS = -O3 -funroll-loops -fno-strength-reduce -Wstrict-prototypes -Wall \
-#         -fomit-frame-pointer -fexpensive-optimizations -Wmissing-prototypes \
-#         -Wmissing-declarations -ansi -pedantic -Wshadow -Wpointer-arith \
-#         -Wbad-function-cast -Wcast-qual -Wwrite-strings -Wconversion \
-#         -Wmissing-noreturn -Wmissing-format-attribute -Wunreachable-code \
-#         -Wdisabled-optimization
-
-# -march=i686 -mcpu=i686
-CFLAGS_DBG = -Wstrict-prototypes -Wall -Wmissing-prototypes \
-         -Wmissing-declarations -ansi -ggdb -O0 -DHAVE_DLOPEN
+CFLAGS_DBG = $(CFLAGS_GCC) -ggdb -O0
 # -pg -fprofile-arcs
-
-#CFLAGS = -O3 -Wall -ansi -wd1418,1419,279,310,981,193,810,869,171
 
 CFLAGS_SPLINT = -posix-lib
 
-# -Wredundant-decls
 CFLAGS = $(CFLAGS_DBG)
 #CFLAGS = $(CFLAGS_OPT)
-
 
 INCLUDES = -I $(shell pwd)
 SRCS = ana.c readuser.c conio.c log.c variable.c socket.c mem.c user.c
