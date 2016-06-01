@@ -7,6 +7,7 @@
 
 int sockprintf(int sd, char *fmt, ...);
 int listen_on_af_type(int port, int af, int type);
+int host_connect(int type, char *host, int port);
 #define listen_on(port) listen_on_af_type(port, AF_INET, SOCK_STREAM)
 #define udp_listen_on(port) listen_on_af_type(port, AF_INET, SOCK_DGRAM)
 #define tcp6_listen_on(port) listen_on_af_type(port, AF_INET6, SOCK_STREAM)
