@@ -1079,7 +1079,7 @@ main_loop(void)
 int
 main(int argc, char *argv[])
 {
-	printf("ana v"VER", (c) Matyas Koszik, 2001-2006.\n");
+	printf("ana v"VER", (c) Matyas Koszik, 2001-2006, 2016.\n");
 
 	if(argc > 2)
 	{
