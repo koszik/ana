@@ -22,7 +22,7 @@ LDFLAGS_SOLARIS = -lsocket -lnsl -L/export/home/koszik/SUNWspro/prod/lib
 
 
 CFLAGS_GCC = -Wstrict-prototypes -Wall -Wmissing-prototypes \
-            -Wmissing-declarations -ansi -DHAVE_DLOPEN -std=c99
+            -Wmissing-declarations -ansi -DHAVE_DLOPEN -std=c99 -pedantic
 #	  -Wshadow -Wpointer-arith \
 #         -Wwrite-strings \
 #         -Wmissing-noreturn -Wmissing-format-attribute  \
