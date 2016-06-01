@@ -919,8 +919,8 @@ restart(void)
 	int i;
 
 	console_deinit();
-	i = 1024;
-	while(--i > 2) close(i);
+	i = 1024; // TODO: actual max of fds
+	while(--i > 2) close(i); // TODO: what if no console session
 	execv(s_argv[0], s_argv);
 }
 
