@@ -6,7 +6,10 @@
 #define __SOCKET_H
 
 int sockprintf(int sd, char *fmt, ...);
-int listen_on_af(int port, int af);
-#define listen_on(port) listen_on_af(port, AF_INET)
+int listen_on_af_type(int port, int af, int type);
+#define listen_on(port) listen_on_af_type(port, AF_INET, SOCK_STREAM)
+#define udp_listen_on(port) listen_on_af_type(port, AF_INET, SOCK_DGRAM)
+#define tcp6_listen_on(port) listen_on_af_type(port, AF_INET6, SOCK_STREAM)
+#define udp6_listen_on(port) listen_on_af_type(port, AF_INET6, SOCK_DGRAM)
 
 #endif

@@ -496,7 +496,7 @@ addsock(struct module_type *m, int type, int sd, sockh_t hl, void *sa)
 
 	if(socks[type][sd])
 	{
-		exc_raise(E_P, "attempt to re-add socket!");
+		exc_raise(E_P, "attempt to re-add socket! (sd=%i, type=%i)", sd, type);
 		if(VN("ANA_DEBUG_SOCKET") == 1)
 			abort();
 		return;

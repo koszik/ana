@@ -49,14 +49,18 @@ sockprintf(int sd, char *fmt, ...)
 }
 
 int
-listen_on_af(int port, int af)
+listen_on_af_type(int port, int af, int type)
 {
 	int sd;
 	int one;
 	struct sockaddr_in host_addr;
 
 
-	sd = socket(af, SOCK_STREAM, IPPROTO_IP);
+	if((sd = socket(af, type, IPPROTO_IP)) < 0)
+	{
+		exc_raise(E_P, "socket(%i, %i, IPPROTO_IP) = %i (%s)", af, type, sd, strerror(errno));
+		return -1;
+	}
 	one = 1;
 	setsockopt(sd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
 
@@ -66,12 +70,14 @@ listen_on_af(int port, int af)
 
 	if((bind(sd, (struct sockaddr *)&host_addr, sizeof(struct sockaddr_in))) == -1)
 	{
-		exc_raise(E_P, "bind(%i, %s:%i) = -1 (%s)\n",
+		exc_raise(E_P, "bind(%i, %s:%i) = -1 (%s)",
 		    sd, inet_ntoa(*(struct in_addr*)&host_addr.sin_addr.s_addr),
 		    port, strerror(errno));
+		close(sd);
 		return -1;
 	}
 
-	listen(sd, 128);
+	if(type == SOCK_STREAM)
+	    listen(sd, 128);
 	return sd;
 }

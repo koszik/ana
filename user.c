@@ -323,6 +323,9 @@ addsession(struct session_type *s)
 	int i;
 
 	i = sessionn++;
+	if(VN("ANA_DEBUG_SESSION") == 1) {
+		logprintf(LOG_DEBUG, "addsession: new session[%i]: %s, %s", i, s->user, s->line);
+	}
 	sessions = realloc(sessions, sizeof(*sessions) * sessionn);
 	sessions[i] = s;
 }
