@@ -5,13 +5,17 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
-#include <sys/types.h>  
-#include <sys/socket.h>  
+#include <sys/types.h>
+#include <sys/socket.h>
 #include <unistd.h>
 #include <errno.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdlib.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
 
 #include <main.h>
 #include <socket.h>
@@ -79,5 +83,32 @@ listen_on_af_type(int port, int af, int type)
 
 	if(type == SOCK_STREAM)
 	    listen(sd, 128);
+	return sd;
+}
+
+int
+host_connect(int type, char *host, int port)
+{
+	struct hostent *he;
+	struct sockaddr_in host_addr;
+	int sd;
+
+	memset(&host_addr, 0, sizeof(host_addr));
+	if((he = gethostbyname(host)) == NULL) {
+		exc_raise(E_P, "gethostbyname(%s): %s", host, hstrerror(h_errno));
+		return -1;
+	}
+	host_addr.sin_family = AF_INET;
+	memcpy(&host_addr.sin_addr.s_addr, he->h_addr_list[0], he->h_length);
+	host_addr.sin_port = htons(port);
+	sd = socket(AF_INET, type, IPPROTO_IP);
+	fcntl(sd, F_SETFL, O_NONBLOCK);
+	if((connect(sd, (struct sockaddr *)&host_addr,
+	      sizeof(struct sockaddr_in))) == -1 && errno != EINPROGRESS) {
+		close(sd);
+		exc_raise(E_P, "connect(%i, %s:%i, %i): %s",
+			sd, host, port, sizeof(struct sockaddr_in), strerror(errno));
+		return -1;
+	}
 	return sd;
 }
